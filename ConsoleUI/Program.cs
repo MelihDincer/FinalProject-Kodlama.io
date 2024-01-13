@@ -1,9 +1,14 @@
 ﻿using Business.Concrete;
+using DataAccess.Concrete.EntityFramework;
 using DataAccess.Concrete.InMemory;
 
-ProductManager productManager = new ProductManager(new InMemoryProductDal());
 
-foreach(var product in productManager.GetAll())
+//SOLID
+//SOLID'in O'su: Open Closed Principle => Yeni bir özellik ekliyorsan, mevcuttaki hiçbir koda dokunamazsın. Biz de aşağıda ProductManager içerisinde InMemoryProductDal'dan vazgeçip EfProductDal kullandık.
+ProductManager productManager = new ProductManager(new EfProductDal(), new Ef);
+
+foreach (var product in productManager.GetByUnitPrice(40, 100))
 {
     Console.WriteLine(product.ProductName);
 }
+
