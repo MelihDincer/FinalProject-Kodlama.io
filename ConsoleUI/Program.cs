@@ -1,6 +1,7 @@
 ﻿using Business.Concrete;
 using DataAccess.Concrete.EntityFramework;
 using DataAccess.Concrete.InMemory;
+using Entities.Concrete;
 
 //Data Transformation Object
 ProductTest();
@@ -16,7 +17,21 @@ static void ProductTest()
 
     foreach (var product in productManager.GetProductDetails())
     {
-        Console.WriteLine(product.ProductName + "/" + product.CategoryName);
+        Console.WriteLine(product.ProductName + " --- " + product.CategoryName);
+    }
+
+    productManager.Add(new Product
+    {
+        CategoryId = 1,
+        ProductName = "DENEME",
+        UnitPrice = 99999,
+        UnitsInStock = 31
+    });
+    Console.WriteLine("**********************************************************************************************************************");
+
+    foreach (var product in productManager.GetProductDetails())
+    {
+        Console.WriteLine(product.ProductName + " --- " + product.CategoryName);
     }
 }
 
