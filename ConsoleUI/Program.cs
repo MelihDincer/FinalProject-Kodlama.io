@@ -15,24 +15,40 @@ static void ProductTest()
 
     ProductManager productManager = new ProductManager(new EfProductDal());
 
-    foreach (var product in productManager.GetProductDetails())
+    var result = productManager.GetProductDetails();
+    if (result.Success == true)
     {
-        Console.WriteLine(product.ProductName + " --- " + product.CategoryName);
+        foreach (var product in result.Data)
+        {
+            Console.WriteLine(product.ProductName + " --- " + product.CategoryName);
+        }
+    }
+    else
+    {
+        {
+            Console.WriteLine(result.Message);
+        }
     }
 
-    productManager.Add(new Product
-    {
-        CategoryId = 1,
-        ProductName = "DENEME",
-        UnitPrice = 99999,
-        UnitsInStock = 31
-    });
-    Console.WriteLine("**********************************************************************************************************************");
 
-    foreach (var product in productManager.GetProductDetails())
-    {
-        Console.WriteLine(product.ProductName + " --- " + product.CategoryName);
-    }
+    //foreach (var product in productManager.GetProductDetails())
+    //{
+    //    Console.WriteLine(product.ProductName + " --- " + product.CategoryName);
+    //}
+
+    //productManager.Add(new Product
+    //{
+    //    CategoryId = 1,
+    //    ProductName = "DENEME",
+    //    UnitPrice = 99999,
+    //    UnitsInStock = 31
+    //});
+    //Console.WriteLine("**********************************************************************************************************************");
+
+    //foreach (var product in productManager.GetProductDetails())
+    //{
+    //    Console.WriteLine(product.ProductName + " --- " + product.CategoryName);
+    //}
 }
 
 static void CategoryTest()
