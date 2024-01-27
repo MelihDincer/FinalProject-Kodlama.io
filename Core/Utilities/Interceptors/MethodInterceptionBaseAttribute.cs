@@ -2,6 +2,8 @@
 
 namespace Core.Utilities.Interceptors
 {
+    //Classlara veya metotlara ekleyebilirsin, birden fazla ekleyebilirsin ve inherite edilen bir noktada da bu metot çalışabilsin.
+    //Neden birden fazla kullanabilirim? Loglama işleminde hem bir veritabanına loglasın, hem de bir dosyaya loglasın diyebiliriz.
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method, AllowMultiple = true, Inherited = true)]
     public abstract class MethodInterceptionBaseAttribute : Attribute, IInterceptor
     {
