@@ -9,10 +9,8 @@ namespace Core.Utilities.Interceptors
     {
         //Priority => öncelik
         public int Priority { get; set; } //Hangi attribute önce çalışsın. Önce validation sonra loglama gibi..
-
         public virtual void Intercept(IInvocation invocation)
         {
-
         }
     }
 }

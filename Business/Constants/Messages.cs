@@ -1,7 +1,4 @@
-﻿
-using Entities.Concrete;
-
-namespace Business.Constants
+﻿namespace Business.Constants
 {
     public static class Messages
     {
@@ -11,5 +8,6 @@ namespace Business.Constants
         public static string ProductsListed = "Ürünler listelendi";
         public static string ProductCountOfCategoryError = "İlgili kategoride maximum 10 ürün olabilir";
         public static string ProductNameAlreadyExists = "Eklemek istediğiniz ürün isminde bir ürün veritabanımızda zaten bulunmaktadır";
+        public static string CategoryLimitExceded = "Kategori limiti aşıldığı için yeni ürün eklenemiyor";
     }
 }

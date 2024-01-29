@@ -2,6 +2,7 @@
 using Business.Constants;
 using Business.ValidationRules.FluentValidation;
 using Core.Aspects.Autofac.Validation;
+using Core.Utilities.Business;
 using Core.Utilities.Results;
 using DataAccess.Abstract;
 using Entities.Concrete;
@@ -12,27 +13,25 @@ namespace Business.Concrete
     public class ProductManager : IProductService
     {
         private IProductDal _productDal;
+        private ICategoryService _categoryService;
         //ProductManager newlendiğinde bana bir tane IProductDal referansı ver. Bugün entityframework ertesi gün docker olabilir. Hepsi aynı referansı tutacak sonuçta.
-        public ProductManager(IProductDal productDal)
+        public ProductManager(IProductDal productDal, ICategoryService categoryService)
         {
             _productDal = productDal;
+            _categoryService = categoryService;
         }
 
         [ValidationAspect(typeof(ProductValidator))]
         public IResult Add(Product product)
         {
-
-
             //Sınıfın en sonunda tanımladığımız iş kuralı parçacığı (metot) success döndürüyor ve aynı isimde ürün eklenemezise ekleme işlemini yap
-            if (CheckIfProductCountOfCategoryCorrect(product.CategoryId).Success && CheckIfProductNameExists(product.ProductName).Success)
+            IResult result = BusinessRules.Run(CheckIfProductNameExists(product.ProductName), CheckIfProductCountOfCategoryCorrect(product.CategoryId), CheckIfCategoryLimitExceded(product.CategoryId));
+            if (result != null)
             {
-                if (CheckIfProductNameExists(product.ProductName).Success)
-                {
-                    _productDal.Add(product);
-                    return new SuccessResult(Messages.ProductAdded);
-                }                
+                return result;
             }
-            return new ErrorResult();
+            _productDal.Add(product);
+            return new SuccessResult(Messages.ProductAdded);
         }
 
         public IResult Delete(Product product)
@@ -47,7 +46,6 @@ namespace Business.Concrete
             {
                 return new ErrorDataResult<List<Product>>(Messages.MaintenanceTime);
             }
-
             return new SuccessDataResult<List<Product>>(_productDal.GetAll(), Messages.ProductsListed);
         }
 
@@ -107,6 +105,17 @@ namespace Business.Concrete
             if (result)
             {
                 return new ErrorResult(Messages.ProductNameAlreadyExists);
+            }
+            return new SuccessResult();
+        }
+
+        //Eğer mevcut kategori sayısı 15'i geçtiyse sisteme yeni ürün eklenemez.
+        private IResult CheckIfCategoryLimitExceded(int categoryId)
+        {
+            var result = _categoryService.GetAll();
+            if (result.Data.Count > 15)
+            {
+                return new ErrorResult(Messages.CategoryLimitExceded);
             }
             return new SuccessResult();
         }

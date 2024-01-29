@@ -13,7 +13,7 @@ static void ProductTest()
     //SOLID
     //SOLID'in O'su: Open Closed Principle => Yeni bir özellik ekliyorsan, mevcuttaki hiçbir koda dokunamazsın. Biz de aşağıda ProductManager içerisinde InMemoryProductDal'dan vazgeçip EfProductDal kullandık.
 
-    ProductManager productManager = new ProductManager(new EfProductDal());
+    ProductManager productManager = new ProductManager(new EfProductDal(), new CategoryManager(new EfCategoryDal()));
 
     var result = productManager.GetProductDetails();
     if (result.Success == true)
@@ -54,7 +54,7 @@ static void ProductTest()
 static void CategoryTest()
 {
     CategoryManager categoryManager = new CategoryManager(new EfCategoryDal());
-    foreach (var category in categoryManager.GetAll())
+    foreach (var category in categoryManager.GetAll().Data)
     {
         Console.WriteLine(category.CategoryName);
     }
