@@ -21,10 +21,13 @@ namespace Business.Concrete
             _categoryService = categoryService;
         }
 
+        //encrypt => verinin şifrelenmesi, decrypt => şifrelenen verinin çözülmesi
+
+        [SecuredOperation("product.add")]
         [ValidationAspect(typeof(ProductValidator))]
         public IResult Add(Product product)
         {
-            //Sınıfın en sonunda tanımladığımız iş kuralı parçacığı (metot) success döndürüyor ve aynı isimde ürün eklenemezise ekleme işlemini yap
+            //Sınıfın en sonunda tanımladığımız iş kuralı parçacığı (metot) success döndürüyor ve aynı isimde ürün eklenemez ise ekleme işlemini yap
             IResult result = BusinessRules.Run(CheckIfProductNameExists(product.ProductName), CheckIfProductCountOfCategoryCorrect(product.CategoryId), CheckIfCategoryLimitExceded(product.CategoryId));
             if (result != null)
             {
@@ -42,10 +45,10 @@ namespace Business.Concrete
 
         public IDataResult<List<Product>> GetAll()
         {
-            if (DateTime.Now.Hour == 21)
-            {
-                return new ErrorDataResult<List<Product>>(Messages.MaintenanceTime);
-            }
+            //if (DateTime.Now.Hour == 21)
+            //{
+            //    return new ErrorDataResult<List<Product>>(Messages.MaintenanceTime);
+            //}
             return new SuccessDataResult<List<Product>>(_productDal.GetAll(), Messages.ProductsListed);
         }
 
