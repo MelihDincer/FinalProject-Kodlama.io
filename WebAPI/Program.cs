@@ -1,10 +1,12 @@
 using Autofac;
-using Autofac.Core;
 using Autofac.Extensions.DependencyInjection;
 using Business.DependencyResolvers.Autofac;
 using Core.Utilities.Security.Encryption;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+using Core.Extensions;
+using Core.Utilities.IoC;
+using Core.DependencyResolvers;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,8 +19,6 @@ builder.Host.UseServiceProviderFactory(new AutofacServiceProviderFactory()).Conf
 // Add services to the container.
 //Autofac, Ninject, CastleWindsor, StructureMap, LightInject, DryInject --> IoC Container
 builder.Services.AddControllers();
-
-//builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
 builder.Services.AddCors();
 
@@ -39,6 +39,11 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         };
     });
 
+//Biz yarýn öbür gün injectionlar için coremodule gibi farklý module'lar da oluþturursak, onlarý da istediðimiz kadar oluþturup burada new CoreModule'dan sonra "," virgül koyarak onlarý da kolaylýkla ekleyebiliriz.
+builder.Services.AddDependencyResolvers(new ICoreModule[]
+{
+    new CoreModule()
+});
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
