@@ -2,12 +2,14 @@
 using Business.BusinessAspects.Autofac;
 using Business.Constants;
 using Business.ValidationRules.FluentValidation;
+using Core.Aspects.Autofac.Caching;
 using Core.Aspects.Autofac.Validation;
 using Core.Utilities.Business;
 using Core.Utilities.Results;
 using DataAccess.Abstract;
 using Entities.Concrete;
 using Entities.DTOs;
+using System.Transactions;
 
 namespace Business.Concrete
 {
@@ -26,6 +28,7 @@ namespace Business.Concrete
 
         [SecuredOperation("product.add")]
         [ValidationAspect(typeof(ProductValidator))]
+        [CacheRemoveAspect("IProductService.Get")]
         public IResult Add(Product product)
         {
             //Sınıfın en sonunda tanımladığımız iş kuralı parçacığı (metot) success döndürüyor ve aynı isimde ürün eklenemez ise ekleme işlemini yap
@@ -44,6 +47,7 @@ namespace Business.Concrete
             return new SuccessResult();
         }
 
+        [CacheAspect] //key,value
         public IDataResult<List<Product>> GetAll()
         {
             //if (DateTime.Now.Hour == 21)
@@ -58,6 +62,7 @@ namespace Business.Concrete
             return new SuccessDataResult<List<Product>>(_productDal.GetAll(c => c.CategoryId == id));
         }
 
+        [CacheAspect]
         public IDataResult<Product> GetById(int productId)
         {
             return new SuccessDataResult<Product>(_productDal.Get(p => p.ProductId == productId));
@@ -78,6 +83,7 @@ namespace Business.Concrete
         }
 
         [ValidationAspect(typeof(ProductValidator))]
+        [CacheRemoveAspect("IProductService.Get")]
         public IResult Update(Product product)
         {
             var result = _productDal.GetAll(p => p.CategoryId == product.CategoryId);
@@ -122,6 +128,31 @@ namespace Business.Concrete
                 return new ErrorResult(Messages.CategoryLimitExceded);
             }
             return new SuccessResult();
+        }
+
+        public IResult AddTransactionalTest(Product product)
+        {
+            //Senaryomuz
+
+            using(TransactionScope scope = new())
+            {
+                try
+                {
+                    Add(product);
+                    if (product.UnitPrice < 10)
+                        throw new Exception("");
+
+                    Add(product);
+                    scope.Complete();
+                }
+                catch (Exception)
+                {
+                    scope.Dispose();
+                }
+            }
+
+            
+            return null;
         }
     }
 }

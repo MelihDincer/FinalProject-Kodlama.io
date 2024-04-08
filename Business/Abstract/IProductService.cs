@@ -14,5 +14,8 @@ namespace Business.Abstract
         IResult Add(Product product);
         IResult Delete(Product product);
         IResult Update(Product product);
+
+        //Uygulamalarda tutarlılığı korumak için yaptığımız bir yöntem. Örneğin hesabımızda 100₺ para var ve başka hesaba 10₺ para aktaracağım. Benim hesabımda 10₺ düşecek şekilde update edilmesi. Karşıdaki adamın da 10₺ hesabının artacağı şekilde update edilmesi. Benim hesabımdan para eksilirken(düşerken) gönderdiğim kişiye eklenecekken sistem hata verdi. Bu yüzden işlemi geri alması gerekmektedir.
+        IResult AddTransactionalTest(Product product);
     }
 }
