@@ -26,7 +26,7 @@ namespace Business.Concrete
 
         //encrypt => verinin şifrelenmesi, decrypt => şifrelenen verinin çözülmesi
 
-        [SecuredOperation("product.add")]
+        //[SecuredOperation("product.add")]
         [ValidationAspect(typeof(ProductValidator))]
         [CacheRemoveAspect("IProductService.Get")]
         public IResult Add(Product product)
