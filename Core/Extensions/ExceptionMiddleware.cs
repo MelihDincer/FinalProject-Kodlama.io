@@ -1,4 +1,5 @@
 ﻿using FluentValidation;
+using FluentValidation.Results;
 using Microsoft.AspNetCore.Http;
 using System.Net;
 
@@ -31,12 +32,25 @@ namespace Core.Extensions
             httpContext.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
 
             string message = "Internal Server Error";
-            if (e.GetType() == typeof(ValidationException))
+
+            //Hatanın türünü kontrol et.
+            IEnumerable<ValidationFailure> errors;
+            if (e.GetType() == typeof(ValidationException))//Eğer doğrulama hatası ise;
             {
                 message = e.Message;
+                errors = ((ValidationException) e).Errors;
+                httpContext.Response.StatusCode = 400;
+
+                //Burada doğrulama hatasına göre bir dönüş (ErrorDetails) gerçekleştirdik.
+                return httpContext.Response.WriteAsync(new ValidationErrorDetails
+                {
+                    StatusCode = 400,
+                    Message = message,
+                    Errors = errors
+                }.ToString());
             }
 
-            //Sistem hata verirse burayı döndür.
+            //Sistemsel normal bir hata verirse burayı döndür.
             return httpContext.Response.WriteAsync(new ErrorDetails
             {
                 StatusCode = httpContext.Response.StatusCode,
